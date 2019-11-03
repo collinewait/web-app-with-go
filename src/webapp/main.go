@@ -2,15 +2,17 @@ package main
 
 import (
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
 	templates := populateTemplates()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		resquestedFile := r.URL.Path[1:]
-		t := templates.Lookup(resquestedFile + ".html")
+		t := templates[resquestedFile+".html"]
 		if t != nil {
 			err := t.Execute(w, nil)
 			if err != nil {
@@ -25,9 +27,35 @@ func main() {
 	http.ListenAndServe(":8000", nil)
 }
 
-func populateTemplates() *template.Template {
-	result := template.New("templates")
+func populateTemplates() map[string]*template.Template {
+	result := make(map[string]*template.Template)
 	const basePath = "templates"
-	template.Must(result.ParseGlob(basePath + "/*.html"))
+	layout := template.Must(template.ParseFiles(basePath + "/_layout.html"))
+	template.Must(layout.ParseFiles(basePath+"/_header.html", basePath+"/_footer.html"))
+	dir, err := os.Open(basePath + "/content")
+	if err != nil {
+		panic("Failed to load template blocks directory: " + err.Error())
+	}
+	files, err := dir.Readdir(-1)
+	if err != nil {
+		panic("Failed to read contents of content directory: " + err.Error())
+	}
+	for _, file := range files {
+		f, err := os.Open(basePath + "/content/" + file.Name())
+		if err != nil {
+			panic("Failed to open template '" + file.Name() + "'")
+		}
+		content, err := ioutil.ReadAll(f)
+		if err != nil {
+			panic("Failed to read content from file '" + file.Name() + "'")
+		}
+		f.Close()
+		tmpl := template.Must(layout.Clone())
+		_, err = tmpl.Parse(string(content))
+		if err != nil {
+			panic("Failed to parse contents of '" + file.Name() + "' as template")
+		}
+		result[file.Name()] = tmpl
+	}
 	return result
 }
