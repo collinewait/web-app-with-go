@@ -21,6 +21,15 @@ func (h home) registerRoutes() {
 }
 
 func (h home) handleHome(w http.ResponseWriter, r *http.Request) {
+	/*
+		Server Push can reduce efficiency if the resource can be cached
+		actually this css file can be cached but I am experimenting Server Push
+	*/
+	if pusher, ok := w.(http.Pusher); ok {
+		pusher.Push("/css/app.css", &http.PushOptions{
+			Header: http.Header{"Content-type": []string{"text/css"}},
+		})
+	}
 	vm := viewmodel.NewHome()
 	w.Header().Add("Content-Type", "text/html")
 	// time.Sleep(4 * time.Second) // uncomment to test timeout, it timesout at 3sec

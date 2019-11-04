@@ -25,9 +25,8 @@ func Login(email, password string) (*User, error) {
 	hasher := sha512.New()
 	hasher.Write([]byte(passwordSalt))
 	hasher.Write([]byte(email))
-	hasher.Write([]byte("hashedpassword"))
+	hasher.Write([]byte(password))
 	pwd := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
-	println(pwd)
 	row := db.QueryRow(`
 	SELECT id, email, firstname, lastname
 	FROM public.user
