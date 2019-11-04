@@ -1,37 +1,16 @@
 package main
 
 import (
-	"github/collinewait/web-app-with-go/src/webapp/viewmodel"
+	"github/collinewait/web-app-with-go/src/webapp/controller"
 	"html/template"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 )
 
 func main() {
 	templates := populateTemplates()
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		resquestedFile := r.URL.Path[1:]
-		t := templates[resquestedFile+".html"]
-		var context interface{}
-		switch resquestedFile {
-		case "shop":
-			context = viewmodel.NewShop()
-		default:
-			context = viewmodel.NewHome()
-		}
-		if t != nil {
-			err := t.Execute(w, context)
-			if err != nil {
-				log.Println(err)
-			}
-		} else {
-			w.WriteHeader(http.StatusNotFound)
-		}
-	})
-	http.Handle("/img/", http.FileServer(http.Dir("public")))
-	http.Handle("/css/", http.FileServer(http.Dir("public")))
+	controller.Startup(templates)
 	http.ListenAndServe(":8000", nil)
 }
 
