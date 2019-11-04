@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github/collinewait/web-app-with-go/src/webapp/model"
 	"github/collinewait/web-app-with-go/src/webapp/viewmodel"
 	"html/template"
 	"log"
@@ -35,10 +36,12 @@ func (h home) handleLogin(w http.ResponseWriter, r *http.Request) {
 		}
 		email := r.Form.Get("email")
 		password := r.Form.Get("password")
-		if email == "test@gmail.com" && password == "password" {
+		if user, err := model.Login(email, password); err == nil {
+			log.Printf("User has logged in: %vln", user)
 			http.Redirect(w, r, "/home", http.StatusTemporaryRedirect)
 			return
 		} else {
+			log.Printf("Failed to log in user with email: %v, error was: %v\n", email, err)
 			vm.Email = email
 			vm.Password = password
 		}

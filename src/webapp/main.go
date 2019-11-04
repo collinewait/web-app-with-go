@@ -24,7 +24,7 @@ func main() {
 }
 
 func connectToDatabase() *sql.DB {
-	db, err := sql.Open("postgres", "postgres://wait:wait@localhost/wait?sslmode=disable") // in a real app use ssl
+	db, err := sql.Open("postgres", "postgres://collinewaitire:wait@localhost/wait?sslmode=disable") // in a real app use ssl
 	if err != nil {
 		log.Fatalln(fmt.Errorf("Unable to connect to database: %v", err))
 	}
