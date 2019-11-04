@@ -12,6 +12,7 @@ var (
 
 func Startup(templates map[string]*template.Template) {
 	homeController.homeTemplate = templates["home.html"]
+	homeController.loginTemplate = templates["login.html"]
 	shopController.shopTemplate = templates["shop.html"]
 	shopController.categoryTemplate = templates["shop_details.html"]
 	homeController.registerRoutes()
