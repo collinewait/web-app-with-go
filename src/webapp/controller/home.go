@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 )
 
 type home struct {
@@ -22,6 +23,7 @@ func (h home) registerRoutes() {
 func (h home) handleHome(w http.ResponseWriter, r *http.Request) {
 	vm := viewmodel.NewHome()
 	w.Header().Add("Content-Type", "text/html")
+	// time.Sleep(4 * time.Second) // uncomment to test timeout, it timesout at 3sec
 	h.homeTemplate.Execute(w, vm)
 }
 
