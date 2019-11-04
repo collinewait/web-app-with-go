@@ -2,6 +2,7 @@ package main
 
 import (
 	"github/collinewait/web-app-with-go/src/webapp/controller"
+	"github/collinewait/web-app-with-go/src/webapp/middleware"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 func main() {
 	templates := populateTemplates()
 	controller.Startup(templates)
-	http.ListenAndServe(":8000", nil)
+	http.ListenAndServe(":8000", new(middleware.GzipMiddleware))
 }
 
 func populateTemplates() map[string]*template.Template {
